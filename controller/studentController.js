@@ -1,6 +1,13 @@
 const Feedback = require("../models/feedback");
 const Token = require("../models/token");
 
+exports.getFeedback = async (req, res) => {
+  let { token } = req.params;
+  let generatedToken = await Token.findOne({ token: token });
+  console.log(generatedToken);
+  res.json({ generatedToken });
+};
+
 exports.postFeedback = async (req, res) => {
   const {
     studentRoll,
@@ -76,11 +83,4 @@ exports.postFeedback = async (req, res) => {
   }
 
   //Create feedback schema first
-};
-
-exports.getFeedback = async (req, res) => {
-  let { token } = req.params;
-  let generatedToken = await Token.findOne({ token: token });
-  console.log(generatedToken);
-  res.json({ generatedToken });
 };

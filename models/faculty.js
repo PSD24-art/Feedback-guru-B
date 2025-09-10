@@ -4,9 +4,9 @@ const { Schema } = require("mongoose");
 //   .then(() => console.log("Databse Connected"))
 //   .catch((err) => console.log(err));
 
-async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
-}
+// async function main() {
+//   await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
+// }
 
 const facultySchema = new Schema({
   name: { type: String, required: true },
@@ -16,7 +16,7 @@ const facultySchema = new Schema({
   role: { type: String, required: true },
 });
 
-const Faculty = new mongoose.model("Faculty", facultySchema);
+const Faculty = mongoose.model("Faculty", facultySchema);
 
 const addFaculty = async () => {
   // await Faculty.deleteMany({});
@@ -28,6 +28,7 @@ const addFaculty = async () => {
   //   role: "admin",
   // });
   // let res = await newFaculty.save();
+
   let res = await Faculty.insertMany([
     {
       name: "D. J. Manowar",

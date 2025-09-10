@@ -2,8 +2,9 @@ const Faculty = require("../models/faculty");
 const Subject = require("../models/subject");
 const Token = require("../models/token");
 const { v4: uuidv4 } = require("uuid");
+const PORT = 3420;
 
-exports.putSubject = async (req, res) => {
+exports.getFaculty = async (req, res) => {
   const { id } = req.params;
   let faculty = await Faculty.findById(id);
   // console.log(faculty);
@@ -11,15 +12,21 @@ exports.putSubject = async (req, res) => {
   console.log(code);
   //all subjects should be hardcoded in the databse
   const subject = await Subject.findOne({ code: code });
-  if (faculty) {
-    subject.faculty = faculty;
-  } else {
-    console.log("faculty not found");
+  if (!faculty) {
+    return res.status(404).json({ error: "Faculty not found" });
   }
+
+  if (!subject) {
+    return res.status(404).json({ error: "Subject not found" });
+  }
+
+  subject.faculty = faculty;
+  await subject.save();
+
   res.json({ subject });
 };
 
-exports.getFaculty = async (req, res) => {
+exports.putSubject = async (req, res) => {
   const { id } = req.params;
   let faculty = await Faculty.findById(id);
   // console.log(faculty);
@@ -44,7 +51,7 @@ exports.postToken = async (req, res) => {
   const token = uuidv4();
   let subject = await Subject.findOne({ code: code });
   console.log(subject);
-  const newToken = await new Token({
+  const newToken = new Token({
     token: token,
     faculty: faculty,
     subject: subject,

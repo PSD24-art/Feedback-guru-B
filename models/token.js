@@ -4,9 +4,9 @@ const { Schema } = require("mongoose");
 //   .then(() => console.log("Databse Connected"))
 //   .catch((err) => console.log(err));
 
-async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
-}
+// async function main() {
+//   await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
+// }
 
 const tokenSchema = new Schema({
   token: { type: String, required: true, unique: true },
@@ -25,6 +25,6 @@ const tokenSchema = new Schema({
   createdAt: { type: Date, default: Date.now, expires: "7d" },
 });
 
-const Token = new mongoose.model("Token", tokenSchema);
+const Token = mongoose.model("Token", tokenSchema);
 
 module.exports = Token;
