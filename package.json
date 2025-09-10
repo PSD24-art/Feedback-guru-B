@@ -1,0 +1,19 @@
+{
+  "name": "backend_node",
+  "version": "1.0.0",
+  "description": "Backend for Acadamic Feedback system",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Prathamesh-Yash-Kartik-Hrutik",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.18.0",
+    "nodemon": "^3.1.10",
+    "uuid": "^13.0.0"
+  }
+}
