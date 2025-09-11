@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const studentRouter = require("./routes/studentRouter");
 const facultyRouter = require("./routes/facultyRouter");
+const adminRouter = require("./routes/adminRouter");
 const PORT = 3420;
 const app = express();
 main()
@@ -13,15 +14,14 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
 }
 
-//Flow faculty -> your subjects -> add subject -> generate Link (Link generated)
-
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Root is working");
 });
-
+//routes for admin
+app.use(adminRouter);
 // routes for students
 app.use(studentRouter);
 //routes for "/faculties"

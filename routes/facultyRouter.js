@@ -2,12 +2,16 @@ const express = require("express");
 const facultyRouter = express.Router();
 const facultyController = require("../controller/facultyController");
 
-facultyRouter.get("/faculties/:id", facultyController.getFaculty);
+const { getFaculty, putSubject, postToken } = facultyController;
 
-facultyRouter.put("/faculties/:id/subject", facultyController.putSubject);
+//Flow: faculty -> your subjects -> add subject -> generate Link (Link generated)
 
-facultyRouter.get("/faculties", facultyController.facultyDashboard);
+//fetches faculty and subject data of the faculty
+facultyRouter.get("/faculties/:id", getFaculty);
 
-facultyRouter.post("/tokens", facultyController.postToken);
+//Add subject for feedback form and insert faculty id to it
+facultyRouter.put("/faculties/:id/subject", putSubject);
+//This module creates a unique link
+facultyRouter.post("/faculties/:id/tokens", postToken);
 
 module.exports = facultyRouter;
