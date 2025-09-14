@@ -4,19 +4,22 @@ const mongoose = require("mongoose");
 const studentRouter = require("./routes/studentRouter");
 const facultyRouter = require("./routes/facultyRouter");
 const adminRouter = require("./routes/adminRouter");
-const PORT = 3420;
 const app = express();
+require("dotenv").config();
+const dbURI = process.env.MONGO_URI;
+const PORT = process.env.PORT || 5000;
 main()
   .then(() => console.log("Databse Connected"))
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
+  await mongoose.connect(dbURI);
 }
 
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// "/" route
 app.get("/", (req, res) => {
   res.send("Root is working");
 });

@@ -1,8 +1,5 @@
 const Faculty = require("../models/faculty");
 const Subject = require("../models/subject");
-const Token = require("../models/token");
-const { v4: uuidv4 } = require("uuid");
-const PORT = 3420;
 
 exports.getFaculties = async (req, res) => {
   const allFaculties = await Faculty.find();
