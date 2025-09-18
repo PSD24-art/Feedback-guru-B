@@ -2,23 +2,27 @@ const Faculty = require("../models/faculty");
 const Subject = require("../models/subject");
 
 exports.getFaculties = async (req, res) => {
-  const allFaculties = await Faculty.find();
+  const allFaculties = await Faculty.find({ role: "faculty" });
   //   console.log(allFaculties);
   res.json({ allFaculties });
 };
 
 exports.postFaculty = async (req, res) => {
   const { name, email, department } = req.body;
-
+  let username = name.toLowerCase().split(" ").splice(0, 1) + "@tiet";
   const newFaculty = new Faculty({
+    username,
     name,
     email,
     department,
     role: "faculty",
   });
-
-  const result = await newFaculty.save();
-  res.json({ result });
+  try {
+    const result = await Faculty.register(newFaculty, "defaultPassword");
+    res.json({ result, message: "Faculty added successfully" });
+  } catch (e) {
+    res.status(404).json({ error: e.message });
+  }
 };
 
 exports.getOneFaculty = async (req, res) => {
@@ -32,13 +36,13 @@ exports.getOneFaculty = async (req, res) => {
   if (!faculty) {
     res.status(404).json({ error: "no subjects to fetch" });
   }
-  res.json({ subject });
+  res.json({ faculty, subject });
 };
 
 exports.deleteFaculty = async (req, res) => {
   const { id } = req.params;
   console.log(id);
-  const deletFaculty = await Faculty.findByIdAndDelete(id);
-  console.log(deletFaculty);
-  res.json({ deletFaculty });
+  const deleteFaculty = await Faculty.findByIdAndDelete(id);
+  console.log(deleteFaculty);
+  res.json({ deleteFaculty });
 };
