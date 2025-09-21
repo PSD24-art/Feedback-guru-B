@@ -12,16 +12,17 @@ async function main() {
 
 const subjectSchema = new Schema({
   name: { type: String, required: true },
-  code: { type: String, require: true },
-  faculty: { type: Schema.Types.ObjectId, ref: "Faculty" },
+  code: { type: String, require: true, unique: true },
+  faculty: [{ type: Schema.Types.ObjectId, ref: "Faculty" }],
   semester: { type: Number },
+  created_by: { type: Schema.Types.ObjectId, ref: "Faculty" },
   department: String,
 });
 
 const Subject = mongoose.model("Subject", subjectSchema);
 
 const addSubject = async () => {
-  await Subject.deleteMany({});
+  // await Subject.deleteMany({});
   try {
     // Find faculty document
     // let faculty = await Faculty.findById("68bfcc5040a25156e4a60c69");
@@ -32,8 +33,8 @@ const addSubject = async () => {
 
     // Create subject with reference
     let subject = new Subject({
-      name: "CC",
-      code: "CS0701",
+      name: "CF",
+      code: "CS0706",
       semester: 7,
       department: "Computer Science",
     });

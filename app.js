@@ -23,6 +23,9 @@ const sessionOptions = {
     httpOnly: true,
   },
 };
+//middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionOptions));
 //Passport middlewraes
 app.use(passport.initialize());
@@ -39,10 +42,12 @@ mongoose
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
 
-app.use(cors());
-//middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 //
 //req.user
