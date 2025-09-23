@@ -12,6 +12,7 @@ const facultyRouter = require("./routes/facultyRouter");
 const adminRouter = require("./routes/adminRouter");
 const loginRouter = require("./routes/login");
 const Faculty = require("./models/faculty");
+const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
 const sessionOptions = {
@@ -44,7 +45,7 @@ mongoose
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
@@ -58,6 +59,10 @@ app.use(
 // "/" route
 app.get("/", (req, res) => {
   res.send("Root is working");
+});
+
+app.get("/me", isAuthenticated, (req, res) => {
+  res.json({ user: req.user });
 });
 
 //login Route

@@ -9,7 +9,11 @@ async function main() {
 }
 
 const feedbackSchema = new Schema({
-  submittedBy: {
+  studentName: {
+    type: String,
+    required: true,
+  },
+  studentRoll: {
     type: String,
     required: true,
   },

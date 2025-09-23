@@ -14,6 +14,24 @@ router.post("/login", passport.authenticate("local"), async (req, res) => {
   });
 });
 
+router.get("/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+
+    // Also destroy session if you’re using express-session
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.clearCookie("connect.sid"); // clears cookie (important!)
+      return res.status(200).json({ message: "Logged out successfully" });
+    });
+  });
+});
+
 //change password
 router.post("/change-password", isAuthenticated, async (req, res) => {
   const { oldPassword, newPassword } = req.body;
@@ -27,14 +45,6 @@ router.post("/change-password", isAuthenticated, async (req, res) => {
       .status(400)
       .json({ message: "Error changing password", error: err.message });
   }
-});
-
-router.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      return next(err);
-    }
-  });
 });
 
 module.exports = router;

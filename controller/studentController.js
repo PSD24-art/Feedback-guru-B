@@ -1,15 +1,11 @@
 const Feedback = require("../models/feedback");
 const Token = require("../models/token");
 
-exports.getFeedback = async (req, res) => {
-  let { token } = req.params;
-  let generatedToken = await Token.findOne({ token: token });
-  console.log(generatedToken);
-  res.json({ generatedToken });
-};
+//Createa route which will identify the existing for or token is generated again same faculty subect and student roll, otherwise student will fill full form and after submitting he finds that the form is already submitted
 
 exports.postFeedback = async (req, res) => {
   const {
+    studentName,
     studentRoll,
     parameter1,
     parameter2,
@@ -31,7 +27,8 @@ exports.postFeedback = async (req, res) => {
   console.log(recievedToken);
 
   const feedback = new Feedback({
-    submittedBy: studentRoll,
+    studentName,
+    studentRoll,
     faculty: recievedToken.faculty,
     subject: recievedToken.subject,
     token: recievedToken._id,
@@ -67,7 +64,7 @@ exports.postFeedback = async (req, res) => {
   });
 
   const existingFeedback = await Feedback.findOne({
-    submittedBy: studentRoll,
+    studentRoll: studentRoll,
     faculty: recievedToken.faculty,
     subject: recievedToken.subject,
   });
@@ -75,12 +72,10 @@ exports.postFeedback = async (req, res) => {
     if (!existingFeedback) {
       const result = await feedback.save();
       console.log(result);
-      res.json({ result });
+      res.json({ message: "Feedback Submitted successfully", result });
     }
-  } catch (err) {
-    console.log(err);
-    res.send(err);
+  } catch (error) {
+    console.log(error);
+    res.json({ error });
   }
-
-  //Create feedback schema first
 };

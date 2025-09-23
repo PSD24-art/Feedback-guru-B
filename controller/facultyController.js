@@ -1,4 +1,5 @@
 const Faculty = require("../models/faculty");
+const FeedbackLink = require("../models/feedbackLink");
 const Subject = require("../models/subject");
 const Token = require("../models/token");
 const { v4: uuidv4 } = require("uuid");
@@ -34,7 +35,7 @@ exports.getSubject = async (req, res) => {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    const subject = await Subject.find();
+    const subject = await Subject.find({ faculty: id });
     res.json({ subject });
   } catch (err) {
     console.error(err);
@@ -49,7 +50,7 @@ exports.putSubject = async (req, res) => {
     // console.log(faculty);
     const { code } = req.body;
     console.log(code);
-    //all subjects should be hardcoded in the databse
+    //subjects should be added by faculty
     const subject = await Subject.findOne({ code: code });
 
     if (!faculty) {
@@ -59,8 +60,12 @@ exports.putSubject = async (req, res) => {
     if (!subject) {
       return res.status(404).json({ error: "Subject not found" });
     }
+    if (subject.faculty !== faculty) {
+      subject.faculty = faculty;
+    } else {
+      res.json({ message: "Faculty exists with the selected subjects" });
+    }
 
-    subject.faculty = faculty;
     const result = await subject.save();
     console.log("Put subject", result);
 
@@ -74,13 +79,15 @@ exports.postSubject = async (req, res) => {
     let faculty = await Faculty.findById(id);
     // console.log(faculty);
     const { name, code, department, semester } = req.body;
-
+    console.log(name, code, department, semester);
     //all subjects should be hardcoded in the databse
+    const unique_code = department + semester + code;
     const newSubject = new Subject({
       name,
       code,
       department,
       semester,
+      unique_code,
     });
 
     const subject = await newSubject.save();
@@ -102,22 +109,143 @@ exports.postSubject = async (req, res) => {
 
 exports.postToken = async (req, res) => {
   const { id } = req.params;
-  if (req.user._id.toString() === id) {
-    const { code } = req.body;
-    const token = uuidv4();
-    let subject = await Subject.findOne({ code: code });
-    console.log(subject);
-    const newToken = new Token({
-      token: token,
-      faculty: id,
-      subject: subject,
+  try {
+    if (req.user._id.toString() === id) {
+      const { code } = req.body;
+      const token = uuidv4();
+      let subject = await Subject.findOne({ code: code });
+      const newToken = new Token({
+        token: token,
+        faculty: id,
+        subject: subject,
+      });
+
+      await newToken.save();
+      res.json({
+        link: `http://localhost:${PORT}/feedback/${token}`, //React new Link
+        newToken,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error });
+  }
+};
+
+exports.getSubjectWithDept = async (req, res) => {
+  try {
+    const { id, dept } = req.params;
+    const department = dept.toUpperCase();
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+    if (!department) {
+      return res.status(400).json({ error: "Department is required" });
+    }
+    const subjects = await Subject.find({ department: department });
+    res.json({
+      message: `subjects found of ${department} department`,
+      subjects,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.getSubjectWithDeptSem = async (req, res) => {
+  try {
+    const { id, dept, sem } = req.params;
+
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+    const department = dept.toUpperCase();
+    const subjects = await Subject.find({
+      semester: sem,
+      department: department,
+    });
+    res.json({
+      message: `subjects found of ${department} department and ${sem} semester`,
+      subjects,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+exports.postFeedbackLink = async (req, res) => {
+  const { id } = req.params;
+
+  // Authorization check
+  if (req.user._id.toString() !== id) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const { subject, link } = req.body;
+
+    // Verify faculty exists
+    const faculty = await Faculty.findById(id);
+    if (!faculty) {
+      return res.status(404).json({ error: "Faculty not found" });
+    }
+
+    // Check if feedback link already exists
+    const existingLink = await FeedbackLink.findOne({ subject, link });
+
+    if (existingLink) {
+      const createdByFaculty = await Faculty.findById(existingLink.faculty);
+      const facultyName = createdByFaculty ? createdByFaculty.name : "Unknown";
+      return res.json({ message: `Link already created by ${facultyName}` });
+    }
+
+    const newLink = new FeedbackLink({
+      faculty: faculty._id,
+      link,
+      subject,
     });
 
-    await newToken.save();
-    console.log(newToken);
-    res.json({
-      link: `http://localhost:${PORT}/feedback/${token}`, //React new Link
-      newToken,
-    });
+    const result = await newLink.save();
+    res.json({ result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteFeedbackLink = async (req, res) => {
+  const { id, link } = req.params;
+  if (req.user._id.toString() !== id) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  try {
+    const result = await FeedbackLink.findByIdAndDelete(link);
+    console.log("deleted Link", result);
+    res.json({ message: "Link deleted Successfully" });
+  } catch (e) {
+    console.log(e);
+    res.json({ error: e.message });
+  }
+};
+
+exports.getFeedbackLink = async (req, res) => {
+  const { id } = req.params;
+
+  if (req.user._id.toString() !== id) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const links = await FeedbackLink.find({ faculty: id }).populate(
+      "subject",
+      "name code"
+    );
+
+    res.json({ links });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 };

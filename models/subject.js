@@ -1,6 +1,6 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
-const Faculty = require("./faculty");
 
 // main()
 //   .then(() => console.log("Database Connected"))
@@ -12,11 +12,12 @@ async function main() {
 
 const subjectSchema = new Schema({
   name: { type: String, required: true },
-  code: { type: String, require: true, unique: true },
-  faculty: [{ type: Schema.Types.ObjectId, ref: "Faculty" }],
-  semester: { type: Number },
+  code: { type: Number, require: true, min: 1, max: 15 },
+  department: { type: String, require: true },
+  faculty: { type: Schema.Types.ObjectId, ref: "Faculty" },
+  semester: { type: String, required: true },
   created_by: { type: Schema.Types.ObjectId, ref: "Faculty" },
-  department: String,
+  unique_code: { type: String, required: true, unique: true },
 });
 
 const Subject = mongoose.model("Subject", subjectSchema);

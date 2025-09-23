@@ -3,8 +3,18 @@ const facultyRouter = express.Router();
 const facultyController = require("../controller/facultyController");
 const { isAuthenticated } = require("../middleware/middleware");
 
-const { getFaculty, putSubject, postToken, getSubject, postSubject } =
-  facultyController;
+const {
+  getFaculty,
+  putSubject,
+  postToken,
+  getSubject,
+  postSubject,
+  getSubjectWithDept,
+  getSubjectWithDeptSem,
+  postFeedbackLink,
+  getFeedbackLink,
+  deleteFeedbackLink,
+} = facultyController;
 
 //Flow: faculty -> your subjects -> add subject -> generate Link (Link generated)
 
@@ -16,7 +26,32 @@ facultyRouter.get("/faculties/:id/subject", isAuthenticated, getSubject);
 facultyRouter.post("/faculties/:id/subject", isAuthenticated, postSubject);
 //Add subject for feedback form and insert faculty id to it
 facultyRouter.put("/faculties/:id/subject", isAuthenticated, putSubject);
+
+//Feedback link adding to db
+facultyRouter.post(
+  "/faculties/:id/feedback",
+  isAuthenticated,
+  postFeedbackLink
+);
+//Get all feedback links
+facultyRouter.get("/faculties/:id/feedback", isAuthenticated, getFeedbackLink);
+facultyRouter.delete(
+  "/faculties/:id/feedback/:link",
+  isAuthenticated,
+  deleteFeedbackLink
+);
+//Search subjects router
+facultyRouter.get(
+  "/faculties/:id/subject/:dept",
+  isAuthenticated,
+  getSubjectWithDept
+);
+facultyRouter.get(
+  "/faculties/:id/subject/:dept/:sem",
+  isAuthenticated,
+  getSubjectWithDeptSem
+);
 //This module creates a unique link
-facultyRouter.post("/faculties/:id/tokens", postToken);
+facultyRouter.get("/faculties/:id/tokens", postToken);
 
 module.exports = facultyRouter;
