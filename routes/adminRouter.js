@@ -6,8 +6,14 @@ const { isAuthenticated, isAdmin } = require("../middleware/middleware");
 //Flow: admin dashboard(see all faculties with thier names and subjects) -> clicks a faculty to deep dive into his analytics -> sidebar (has options to
 // add a faculty, remove faculty)
 
-const { getFaculties, postFaculty, getOneFaculty, deleteFaculty } =
-  adminController;
+const {
+  getFaculties,
+  postFaculty,
+  getOneFaculty,
+  deleteFaculty,
+  getFeedbackLinkAdmin,
+  getFeedbackCountAdmin,
+} = adminController;
 //get all faculties
 adminRouter.get("/admin", isAuthenticated, isAdmin, getFaculties);
 
@@ -20,7 +26,20 @@ adminRouter.get(
   isAdmin,
   getOneFaculty
 );
-
+//Faculty Created Links
+adminRouter.get(
+  "/admin/faculties/:id/links",
+  isAdmin,
+  isAuthenticated,
+  getFeedbackLinkAdmin
+);
+//Faculty feedback details
+adminRouter.get(
+  "/admin/faculties/:id/feedback/:subject",
+  isAdmin,
+  isAuthenticated,
+  getFeedbackCountAdmin
+);
 //add faculty
 adminRouter.post("/admin/faculties/new", isAuthenticated, isAdmin, postFaculty);
 

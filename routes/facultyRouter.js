@@ -6,7 +6,7 @@ const { isAuthenticated } = require("../middleware/middleware");
 const {
   getFaculty,
   putSubject,
-  postToken,
+  getToken,
   getSubject,
   postSubject,
   getSubjectWithDept,
@@ -14,6 +14,7 @@ const {
   postFeedbackLink,
   getFeedbackLink,
   deleteFeedbackLink,
+  getFeedbackCount,
 } = facultyController;
 
 //Flow: faculty -> your subjects -> add subject -> generate Link (Link generated)
@@ -28,13 +29,10 @@ facultyRouter.post("/faculties/:id/subject", isAuthenticated, postSubject);
 facultyRouter.put("/faculties/:id/subject", isAuthenticated, putSubject);
 
 //Feedback link adding to db
-facultyRouter.post(
-  "/faculties/:id/feedback",
-  isAuthenticated,
-  postFeedbackLink
-);
+facultyRouter.post("/faculties/:id/feedback", postFeedbackLink);
 //Get all feedback links
 facultyRouter.get("/faculties/:id/feedback", isAuthenticated, getFeedbackLink);
+//Delete Faculty link
 facultyRouter.delete(
   "/faculties/:id/feedback/:link",
   isAuthenticated,
@@ -51,7 +49,13 @@ facultyRouter.get(
   isAuthenticated,
   getSubjectWithDeptSem
 );
+//Fetches the count for feedbacks submitted agianst the same faculty and subject
+facultyRouter.get(
+  "/faculties/:id/count/:subject",
+  isAuthenticated,
+  getFeedbackCount
+);
 //This module creates a unique link
-facultyRouter.get("/faculties/:id/tokens", postToken);
+facultyRouter.get("/faculties/:id/tokens/:code", getToken);
 
 module.exports = facultyRouter;

@@ -1,4 +1,5 @@
 const Faculty = require("../models/faculty");
+const Feedback = require("../models/feedback");
 const FeedbackLink = require("../models/feedbackLink");
 const Subject = require("../models/subject");
 const Token = require("../models/token");
@@ -51,7 +52,7 @@ exports.putSubject = async (req, res) => {
     const { code } = req.body;
     console.log(code);
     //subjects should be added by faculty
-    const subject = await Subject.findOne({ code: code });
+    const subject = await Subject.findOne({ unique_code: code });
 
     if (!faculty) {
       return res.status(404).json({ error: "Faculty not found" });
@@ -107,13 +108,12 @@ exports.postSubject = async (req, res) => {
   }
 };
 
-exports.postToken = async (req, res) => {
-  const { id } = req.params;
+exports.getToken = async (req, res) => {
+  const { id, code } = req.params;
   try {
-    if (req.user._id.toString() === id) {
-      const { code } = req.body;
-      const token = uuidv4();
-      let subject = await Subject.findOne({ code: code });
+    const token = uuidv4();
+    let subject = await Subject.findOne({ unique_code: code });
+    if (subject) {
       const newToken = new Token({
         token: token,
         faculty: id,
@@ -122,7 +122,7 @@ exports.postToken = async (req, res) => {
 
       await newToken.save();
       res.json({
-        link: `http://localhost:${PORT}/feedback/${token}`, //React new Link
+        // link: `http://localhost:${PORT}/feedback/${token}`, //React new Link
         newToken,
       });
     }
@@ -178,14 +178,9 @@ exports.getSubjectWithDeptSem = async (req, res) => {
 exports.postFeedbackLink = async (req, res) => {
   const { id } = req.params;
 
-  // Authorization check
-  if (req.user._id.toString() !== id) {
-    return res.status(403).json({ error: "Unauthorized" });
-  }
-
   try {
     const { subject, link } = req.body;
-
+    console.log("subject", subject);
     // Verify faculty exists
     const faculty = await Faculty.findById(id);
     if (!faculty) {
@@ -240,12 +235,38 @@ exports.getFeedbackLink = async (req, res) => {
   try {
     const links = await FeedbackLink.find({ faculty: id }).populate(
       "subject",
-      "name code"
+      "name unique_code"
     );
 
     res.json({ links });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getFeedbackCount = async (req, res) => {
+  try {
+    const { id, subject } = req.params;
+
+    if (req.user._id.toString() !== id) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    const result = await Feedback.find({ faculty: id, subject });
+
+    if (result.length === 0) {
+      return res.json({
+        message: "No Data yet",
+        Feedbacks: [],
+        FeedbackLength: 0,
+      });
+    }
+
+    console.log("Found feedbacks:", result.length);
+    res.json({ Feedbacks: result, FeedbackLength: result.length });
+  } catch (e) {
+    console.error("Error in getFeedbackCount:", e);
+    res.status(500).json({ error: e.message });
   }
 };

@@ -45,7 +45,7 @@ mongoose
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -74,8 +74,9 @@ app.use(studentRouter);
 //routes for "/faculties"
 app.use(facultyRouter);
 //Error Route
-app.use((req, res) => {
-  res.send("Bad request");
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something broke!" });
 });
 
 app.listen(PORT, () => {
