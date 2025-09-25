@@ -2,22 +2,28 @@ const Faculty = require("../models/faculty");
 const Subject = require("../models/subject");
 const FeedbackLink = require("../models/feedbackLink");
 const Feedback = require("../models/feedback");
+const validator = require("validator");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 exports.getFaculties = async (req, res) => {
   try {
+    const { id } = req.params;
+    let admin = await Faculty.findById(id);
     const allFaculties = await Faculty.find({ role: "faculty" });
     //   console.log(allFaculties);
-    res.json({ allFaculties });
+    res.json({ admin, allFaculties });
   } catch (e) {
-    res
-      .status(404)
-      .json({ message: "Failed to fetch faculties", error: e.message });
+    res.status(404).json({
+      message: "Failed to fetch faculties and Admin",
+      error: e.message,
+    });
   }
 };
 
 exports.postFaculty = async (req, res) => {
   const { name, email, department } = req.body;
-  let username = name.toLowerCase().split(" ").splice(0, 1) + "@tiet";
+  let username = email.toLowerCase().split("@")[0] + "@tiet";
   const newFaculty = new Faculty({
     username,
     name,
@@ -25,11 +31,46 @@ exports.postFaculty = async (req, res) => {
     department,
     role: "faculty",
   });
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: "Invalid email address" });
+  }
+  const defPass = "defaultPassword";
+
   try {
-    const result = await Faculty.register(newFaculty, "defaultPassword");
+    const checkExistingFaculty = await Faculty.findOne({ email });
+    if (checkExistingFaculty) {
+      return res
+        .status(500)
+        .json({ message: "Faculty exixts with same email id" });
+    }
+    const result = await Faculty.register(newFaculty, defPass);
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Academic Feedback" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Your Faculty Account Credentials",
+      html: `
+        <h3>Hello ${name},</h3>
+        <p>Your faculty account has been created. Use the following credentials to log in:</p>
+        <ul>
+          <li><b>Username:</b> ${newFaculty.username}</li>
+          <li><b>Temporary Password:</b> ${defPass}</li>
+        </ul>
+        <p>Please change your password after logging in.</p>
+        <a href="http://localhost:5173/login">Login Here</a>
+      `,
+    });
+
     res.json({ message: "Faculty added successfully", result });
   } catch (e) {
-    res.status(404).json({ error: e.message });
+    res.status(500).json({ error: e.message });
   }
 };
 

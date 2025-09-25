@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
-
+require("dotenv").config();
 const LocalStrategy = require("passport-local");
 //Local Modules
 const studentRouter = require("./routes/studentRouter");
@@ -35,7 +35,7 @@ passport.use(new LocalStrategy(Faculty.authenticate()));
 passport.serializeUser(Faculty.serializeUser());
 passport.deserializeUser(Faculty.deserializeUser());
 //
-require("dotenv").config();
+
 const DB_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 mongoose

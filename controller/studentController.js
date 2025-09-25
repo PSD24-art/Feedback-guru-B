@@ -2,7 +2,31 @@ const Feedback = require("../models/feedback");
 const Token = require("../models/token");
 
 //Createa route which will identify the existing for or token is generated again same faculty subect and student roll, otherwise student will fill full form and after submitting he finds that the form is already submitted
+exports.checkFeedback = async (req, res) => {
+  const { studentRoll } = req.body;
+  const { token } = req.params;
+  // Check token exists
+  const recievedToken = await Token.findOne({ token });
+  if (!recievedToken) {
+    return res.status(404).json({ error: "Invalid or expired token" });
+  }
 
+  // Check if feedback already submitted
+  const existingFeedback = await Feedback.findOne({
+    studentRoll,
+    faculty: recievedToken.faculty,
+    subject: recievedToken.subject,
+  });
+
+  if (existingFeedback) {
+    return res.status(400).json({
+      message: false,
+      existingFeedback,
+    });
+  } else {
+    res.json({ message: true });
+  }
+};
 exports.postFeedback = async (req, res) => {
   try {
     const {
@@ -18,27 +42,6 @@ exports.postFeedback = async (req, res) => {
       improvements,
       additionalComments,
     } = req.body;
-
-    const { token } = req.params;
-    // Check token exists
-    const recievedToken = await Token.findOne({ token });
-    if (!recievedToken) {
-      return res.status(404).json({ error: "Invalid or expired token" });
-    }
-
-    // Check if feedback already submitted
-    const existingFeedback = await Feedback.findOne({
-      studentRoll,
-      faculty: recievedToken.faculty,
-      subject: recievedToken.subject,
-    });
-
-    if (existingFeedback) {
-      return res.status(400).json({
-        message: "Feedback already submitted for this subject by this student",
-        existingFeedback,
-      });
-    }
 
     //  Mark token as used
     recievedToken.used_by = studentRoll;

@@ -81,8 +81,12 @@ exports.postSubject = async (req, res) => {
     // console.log(faculty);
     const { name, code, department, semester } = req.body;
     console.log(name, code, department, semester);
-    //all subjects should be hardcoded in the databse
+
     const unique_code = department + semester + code;
+    const findExistingSubject = await Subject.findOne({ unique_code });
+    if (findExistingSubject)
+      return res.status(500).json({ error: "Subject already exists!" });
+
     const newSubject = new Subject({
       name,
       code,
@@ -94,17 +98,17 @@ exports.postSubject = async (req, res) => {
     const subject = await newSubject.save();
 
     if (!faculty) {
-      return res.status(404).json({ error: "Faculty not found" });
+      return res.status(404).json({ error: "Faculty not found!" });
     }
 
     if (!subject) {
-      return res.status(404).json({ error: "Subject not saved" });
+      return res.status(404).json({ error: "Subject not saved!" });
     }
 
     subject.created_by = faculty;
     const result = await subject.save();
     console.log("New Subject", result);
-    res.json({ message: "Subject saved", subject, created_by: faculty });
+    res.json({ message: "Subject saved!", subject, created_by: faculty });
   }
 };
 

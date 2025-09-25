@@ -23,39 +23,39 @@ const Faculty = mongoose.model("Faculty", facultySchema);
 
 module.exports = Faculty;
 
-const addFaculty = async () => {
-  // await Faculty.deleteMany({});
-  // let newFaculty = new Faculty({
-  //   username: "dtingole",
-  //   name: "D. T. Ingole",
-  //   email: "djmanowar@tietdarapur.ac.in",
-  //   password: "DTINGOLE",
-  //   department: "Computer Science",
-  //   role: "admin",
-  // });
-  // let res = await newFaculty.save();
-  // let admin = await Faculty.findByIdAndUpdate("68bfcbaec6cf4d7bfd577df7");
-  // admin.username = "dtingole";
-  // let res = await admin.save();
-  // console.log("Result", res);
-  // let res = await Faculty.insertMany([
-  //   {
-  //     name: "D. J. Manowar",
-  //     email: "djmanowar@tietdarapur.ac.in",
-  //     password: "DJMANOWAR",
-  //     department: "Computer Science",
-  //     role: "faculty",
-  //   },
-  //   {
-  //     name: "T. N. Ghorsad",
-  //     email: "tnghorsad@tietdarapur.ac.in",
-  //     password: "TNGHORSAD",
-  //     department: "Computer Science",
-  //     role: "faculty",
-  //   },
-  // ]);
-  // console.log(res);
-};
+// const addFaculty = async () => {
+//   // await Faculty.deleteMany({});
+//   // let newFaculty = new Faculty({
+//   //   username: "dtingole",
+//   //   name: "D. T. Ingole",
+//   //   email: "djmanowar@tietdarapur.ac.in",
+//   //   password: "DTINGOLE",
+//   //   department: "Computer Science",
+//   //   role: "admin",
+//   // });
+//   // let res = await newFaculty.save();
+//   // let admin = await Faculty.findByIdAndUpdate("68bfcbaec6cf4d7bfd577df7");
+//   // admin.username = "dtingole";
+//   // let res = await admin.save();
+//   // console.log("Result", res);
+//   // let res = await Faculty.insertMany([
+//   //   {
+//   //     name: "D. J. Manowar",
+//   //     email: "djmanowar@tietdarapur.ac.in",
+//   //     password: "DJMANOWAR",
+//   //     department: "Computer Science",
+//   //     role: "faculty",
+//   //   },
+//   //   {
+//   //     name: "T. N. Ghorsad",
+//   //     email: "tnghorsad@tietdarapur.ac.in",
+//   //     password: "TNGHORSAD",
+//   //     department: "Computer Science",
+//   //     role: "faculty",
+//   //   },
+//   // ]);
+//   // console.log(res);
+// };
 // addFaculty();
 
 // const seedAdmin = async () => {
@@ -66,7 +66,7 @@ const addFaculty = async () => {
 //     role: "admin",
 //     isPasswordSet: false,
 //   });
-//   // const newAdmin = await Faculty.register(admin, "defaultPassword");
-//   console.log(newAdmin);
+//   const newAdmin = await Faculty.register(admin, "defaultPassword");
+//   console.log(admin);
 // };
 // seedAdmin();

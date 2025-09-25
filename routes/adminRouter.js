@@ -14,8 +14,10 @@ const {
   getFeedbackLinkAdmin,
   getFeedbackCountAdmin,
 } = adminController;
+
+//get admin details
+adminRouter.get("/admin/:id", isAuthenticated, isAdmin, getFaculties);
 //get all faculties
-adminRouter.get("/admin", isAuthenticated, isAdmin, getFaculties);
 
 //by clicking individual faculty admin redirects to link get-/faculty/:id
 
