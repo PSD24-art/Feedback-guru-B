@@ -47,7 +47,7 @@ mongoose
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"],
     credentials: true,
   })
 );
