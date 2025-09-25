@@ -16,7 +16,7 @@ const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
 const sessionOptions = {
-  secret: "mysecret",
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
