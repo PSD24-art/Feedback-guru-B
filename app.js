@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["https://feedback-guru.onrender.com"], // frontend URLs
+    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"], // frontend URLs
     credentials: true,
   })
 );
@@ -39,8 +39,8 @@ const sessionOptions = {
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     httpOnly: true,
-    secure: true, // secure cookies in production
-    sameSite: "none", // allow cross-site cookies
+    secure: false,
+    sameSite: "lax",
   },
 };
 app.use(session(sessionOptions));
