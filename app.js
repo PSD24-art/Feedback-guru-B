@@ -16,20 +16,25 @@ const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
+const mongoStore = MongoStore.create({
+  mongoUrl: process.env.MONGO_URI,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 3600,
+  autoRemove: "native",
+});
+
+mongoStore.on("error", (err) => {
+  console.error("Mongo session store error:", err);
+});
 
 const sessionOptions = {
   name: "feedbackGuruSession",
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    crypto: {
-      secret: process.env.SECRET,
-    },
-    touchAfter: 24 * 3600,
-    autoRemove: "native",
-  }),
+  store: mongoStore, // reference the variable here
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
