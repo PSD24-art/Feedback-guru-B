@@ -19,7 +19,7 @@ const app = express();
 //
 app.use(
   cors({
-    origin: "https://feedback-guru.onrender.com",
+    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"],
     credentials: true,
   })
 );
@@ -38,6 +38,7 @@ const mongoStore = MongoStore.create({
 mongoStore.on("error", (err) => {
   console.error("Mongo session store error:", err);
 });
+const isProduction = process.env.NODE_ENV === "production";
 
 const sessionOptions = {
   name: "feedbackGuruSession",
@@ -48,8 +49,8 @@ const sessionOptions = {
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   },
 };
 app.use(session(sessionOptions));
