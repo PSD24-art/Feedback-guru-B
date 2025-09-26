@@ -4,23 +4,16 @@ const { isAuthenticated } = require("../middleware/middleware");
 const router = express.Router();
 const Faculty = require("../models/faculty");
 
-router.post(
-  "/login",
-  passport.authenticate("local", (err, user, info) => {
-    if (err) return next(err);
-    if (!user) return res.status(401).json({ message: info.message });
-  }),
-  async (req, res) => {
-    res.json({
-      message: "Login successful",
-      user: {
-        id: req.user._id,
-        role: req.user.role,
-        username: req.user.username,
-      },
-    });
-  }
-);
+router.post("/login", passport.authenticate("local"), async (req, res) => {
+  res.json({
+    message: "Login successful",
+    user: {
+      id: req.user._id,
+      role: req.user.role,
+      username: req.user.username,
+    },
+  });
+});
 
 router.get("/logout", (req, res, next) => {
   req.logout(function (err) {
