@@ -16,6 +16,8 @@ const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
+app.set("trust proxy", 1);
+
 
 app.use(
   cors({
