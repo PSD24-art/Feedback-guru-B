@@ -15,10 +15,8 @@ const loginRouter = require("./routes/login");
 const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
+
 //
-app.set("trust proxy", 1);
-
-
 app.use(
   cors({
     origin: "https://feedback-guru.onrender.com",
@@ -26,6 +24,7 @@ app.use(
   })
 );
 
+app.set("trust proxy", 1);
 
 const mongoStore = MongoStore.create({
   mongoUrl: process.env.MONGO_URI,
@@ -73,8 +72,6 @@ mongoose
   .connect(DB_URI, {})
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
-
-
 
 //
 //req.user
