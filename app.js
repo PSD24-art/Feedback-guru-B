@@ -1,4 +1,4 @@
-//External Modules
+// External Modules
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -6,38 +6,53 @@ const session = require("express-session");
 const passport = require("passport");
 require("dotenv").config();
 const LocalStrategy = require("passport-local");
-//Local Modules
+
+// Local Modules
 const studentRouter = require("./routes/studentRouter");
 const facultyRouter = require("./routes/facultyRouter");
 const adminRouter = require("./routes/adminRouter");
 const loginRouter = require("./routes/login");
 const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
+
 const app = express();
-//
+
+// Trust proxy
+app.set("trust proxy", 1);
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://feedback-guru.vercel.app"], // frontend URLs
+    credentials: true,
+  })
+);
+
+// Session
 const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: true, // secure cookies in production
+    sameSite: "none", // allow cross-site cookies
   },
 };
-//middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(session(sessionOptions));
-//Passport middlewraes
+
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(Faculty.authenticate()));
 passport.serializeUser(Faculty.serializeUser());
 passport.deserializeUser(Faculty.deserializeUser());
-//
 
+// DB
 const DB_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 mongoose
@@ -45,20 +60,7 @@ mongoose
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"],
-    credentials: true,
-  })
-);
-
-//
-//req.user
-// app.use((req, res, next) => {
-//   res.locals.cruuUserId = req.user._id.toString();
-//   next();
-// });
-// "/" route
+// Routes
 app.get("/", (req, res) => {
   res.send("Root is working");
 });
@@ -67,15 +69,12 @@ app.get("/me", isAuthenticated, (req, res) => {
   res.json({ user: req.user });
 });
 
-//login Route
 app.use(loginRouter);
-//routes for admin
 app.use(adminRouter);
-// routes for students
 app.use(studentRouter);
-//routes for "/faculties"
 app.use(facultyRouter);
-//Error Route
+
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something broke!" });
