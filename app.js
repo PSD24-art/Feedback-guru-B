@@ -31,8 +31,6 @@ app.use(
   })
 );
 
-// Session
-const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
 // Use environment variable for secret
@@ -50,6 +48,7 @@ const sessionOptions = {
     ttl: 7 * 24 * 60 * 60, // session life in seconds (7 days)
     autoRemove: "native", // automatically remove expired sessions
   }),
+
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
