@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://feedback-guru.vercel.app"], // frontend URLs
+    origin: ["http://localhost:5173", "https://feedback-frontend.onrender.com"], // frontend URLs
     credentials: true,
   })
 );
