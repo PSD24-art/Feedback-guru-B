@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+const MongoStore = require("connect-mongo");
 require("dotenv").config();
 const LocalStrategy = require("passport-local");
 //Local Modules
@@ -15,10 +16,18 @@ const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
+
 const sessionOptions = {
-  secret: process.env.SECRET,
+  name: "feedbackGuruSession",
+  secret: process.env.SECRET || "fallbackSecret",
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: "sessions",
+    ttl: 7 * 24 * 60 * 60, // 7 days
+    autoRemove: "native",
+  }),
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
@@ -26,10 +35,12 @@ const sessionOptions = {
     sameSite: "none",
   },
 };
+app.use(session(sessionOptions));
+
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(session(sessionOptions));
+
 //Passport middlewraes
 app.use(passport.initialize());
 app.use(passport.session());
