@@ -26,10 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://https://feedback-guru.onrender.com",
-    ], // frontend URLs
+    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"], // frontend URLs
     credentials: true,
   })
 );
