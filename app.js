@@ -16,6 +16,15 @@ const Faculty = require("./models/faculty");
 const { isAuthenticated } = require("./middleware/middleware");
 const app = express();
 //
+
+app.use(
+  cors({
+    origin: "https://feedback-guru.onrender.com",
+    credentials: true,
+  })
+);
+
+
 const mongoStore = MongoStore.create({
   mongoUrl: process.env.MONGO_URI,
   crypto: {
@@ -63,12 +72,7 @@ mongoose
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
 
-app.use(
-  cors({
-    origin: "https://feedback-guru.onrender.com",
-    credentials: true,
-  })
-);
+
 
 //
 //req.user
