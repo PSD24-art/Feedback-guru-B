@@ -19,13 +19,15 @@ const app = express();
 
 const sessionOptions = {
   name: "feedbackGuruSession",
-  secret: process.env.SECRET || "fallbackSecret",
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
-    collectionName: "sessions",
-    ttl: 7 * 24 * 60 * 60, // 7 days
+    crypto: {
+      secret: process.env.SECRET,
+    },
+    touchAfter: 24 * 3600,
     autoRemove: "native",
   }),
   cookie: {
@@ -37,6 +39,9 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 
+store.on("error", () => {
+  console.log("error on mongo session store");
+});
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
