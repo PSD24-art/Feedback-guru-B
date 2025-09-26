@@ -1,19 +1,20 @@
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
-// main()
-//   .then(() => console.log("Databse Connected"))
-//   .catch((err) => console.log(err));
 
-// async function main() {
-//   await mongoose.connect("mongodb://127.0.0.1:27017/feedbackSys");
-// }
+// const DB_URI =
+//   "mongodb+srv://prathameshd025:Psdahake25s2@prathameshd.sxigv0g.mongodb.net/feedbackSys";
+
+// console.log("Mongo URI:", DB_URI); // should print the URI
+// mongoose
+//   .connect(DB_URI)
+//   .then(() => console.log("Database Connected"))
+//   .catch((err) => console.error("DB Connection Error:", err));
 
 const facultySchema = new Schema({
   name: { type: String, required: true },
   username: { type: String, required: true },
   email: { type: String, required: true },
-  password: String,
   department: String,
   role: { type: String, required: true },
   isPasswordSet: { type: Boolean, default: false },
@@ -60,13 +61,15 @@ module.exports = Faculty;
 
 // const seedAdmin = async () => {
 //   const admin = new Faculty({
-//     name: "D. T. Ingole",
-//     username: "dtingole",
-//     email: "dtingole@tietdarapu.in",
+//     name: "Prathamesh Dahake",
+//     username: "pratham@tiet",
+//     email: "pratham@tietdarapu.in",
 //     role: "admin",
 //     isPasswordSet: false,
 //   });
+
 //   const newAdmin = await Faculty.register(admin, "defaultPassword");
-//   console.log(admin);
+
+//   console.log(newAdmin);
 // };
 // seedAdmin();

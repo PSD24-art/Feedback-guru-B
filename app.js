@@ -32,17 +32,32 @@ app.use(
 );
 
 // Session
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+
+// Use environment variable for secret
+const SESSION_SECRET = process.env.SECRET || "fallbackSecret";
+
+// Session options
 const sessionOptions = {
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
+  name: "feedbackGuruSession", // custom cookie name
+  secret: SESSION_SECRET,
+  resave: false, // don’t save session if unmodified
+  saveUninitialized: false, // don’t create empty sessions
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: "sessions", // optional
+    ttl: 7 * 24 * 60 * 60, // session life in seconds (7 days)
+    autoRemove: "native", // automatically remove expired sessions
+  }),
   cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: true,
     sameSite: "none",
   },
 };
+
 app.use(session(sessionOptions));
 
 // Passport
