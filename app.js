@@ -44,9 +44,6 @@ const sessionOptions = {
 };
 app.use(session(sessionOptions));
 
-store.on("error", () => {
-  console.log("error on mongo session store");
-});
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
