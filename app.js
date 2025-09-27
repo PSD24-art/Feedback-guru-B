@@ -70,7 +70,9 @@ passport.deserializeUser(Faculty.deserializeUser());
 const DB_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 mongoose
-  .connect(DB_URI, {})
+  .connect(DB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
 

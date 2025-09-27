@@ -24,15 +24,32 @@ const Faculty = mongoose.model("Faculty", facultySchema);
 
 module.exports = Faculty;
 
+// const seedAdmin = async () => {
+//   const resp = await Faculty.deleteMany({ role: "admin" });
+//   console.log(resp);
+
+//   const admin = new Faculty({
+//     name: "Prathamesh Dahake",
+//     username: "pratham@tiet",
+//     email: "prathameshd025@gamil.com",
+//     role: "admin",
+//     isPasswordSet: false,
+//   });
+
+//   const newAdmin = await Faculty.register(admin, "defaultPassword");
+
+//   console.log(newAdmin);
+// };
+// seedAdmin();
+
 // const addFaculty = async () => {
-//   // await Faculty.deleteMany({});
-//   // let newFaculty = new Faculty({
-//   //   username: "dtingole",
-//   //   name: "D. T. Ingole",
-//   //   email: "djmanowar@tietdarapur.ac.in",
-//   //   password: "DTINGOLE",
-//   //   department: "Computer Science",
-//   //   role: "admin",
+// let newFaculty = new Faculty({
+//   username: "dtingole",
+//   name: "D. T. Ingole",
+//   email: "djmanowar@tietdarapur.ac.in",
+//   password: "DTINGOLE",
+//   department: "Computer Science",
+//   role: "admin",
 //   // });
 //   // let res = await newFaculty.save();
 //   // let admin = await Faculty.findByIdAndUpdate("68bfcbaec6cf4d7bfd577df7");
@@ -58,18 +75,3 @@ module.exports = Faculty;
 //   // console.log(res);
 // };
 // addFaculty();
-
-// const seedAdmin = async () => {
-//   const admin = new Faculty({
-//     name: "Prathamesh Dahake",
-//     username: "pratham@tiet",
-//     email: "pratham@tietdarapu.in",
-//     role: "admin",
-//     isPasswordSet: false,
-//   });
-
-//   const newAdmin = await Faculty.register(admin, "defaultPassword");
-
-//   console.log(newAdmin);
-// };
-// seedAdmin();

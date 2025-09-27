@@ -5,14 +5,20 @@ const router = express.Router();
 const Faculty = require("../models/faculty");
 
 router.post("/login", passport.authenticate("local"), async (req, res) => {
-  res.json({
-    message: "Login successful",
-    user: {
-      id: req.user._id,
-      role: req.user.role,
-      username: req.user.username,
-    },
-  });
+  try {
+    res.json({
+      message: "Login successful",
+      user: {
+        id: req.user._id,
+        role: req.user.role,
+        username: req.user.username,
+        name: req.user.name,
+      },
+    });
+  } catch (e) {
+    console.log(e.message);
+    res.json({ error: "Invalid user ID or Password" });
+  }
 });
 
 router.get("/logout", (req, res, next) => {

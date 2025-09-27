@@ -109,6 +109,8 @@ exports.postSubject = async (req, res) => {
     const result = await subject.save();
     console.log("New Subject", result);
     res.json({ message: "Subject saved!", subject, created_by: faculty });
+  } else {
+    res.json({ error: "User not authenticated" });
   }
 };
 
@@ -116,23 +118,26 @@ exports.getToken = async (req, res) => {
   const { id, code } = req.params;
   try {
     const token = uuidv4();
-    let subject = await Subject.findOne({ unique_code: code });
-    if (subject) {
-      const newToken = new Token({
-        token: token,
-        faculty: id,
-        subject: subject,
-      });
-
-      await newToken.save();
-      res.json({
-        // link: `http://localhost:${PORT}/feedback/${token}`, //React new Link
-        newToken,
-      });
+    const subject = await Subject.findOne({ unique_code: code });
+    if (!subject) {
+      return res.status(404).json({ error: "Subject not found" });
     }
+    const faculty = await Faculty.findById(id);
+    if (!faculty) {
+      return res.status(404).json({ error: "Faculty not found" });
+    }
+    const newToken = new Token({
+      token,
+      faculty: faculty,
+      subject: subject,
+    });
+
+    const savedToken = await newToken.save();
+
+    res.json({ newToken: savedToken });
   } catch (error) {
-    console.log(error);
-    res.json({ error });
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
