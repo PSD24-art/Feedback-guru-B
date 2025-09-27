@@ -19,7 +19,7 @@ const app = express();
 //
 app.use(
   cors({
-    origin: "https://feedback-guru.onrender.com",
+    origin: "https://feedback-guru-f.onrender.com",
     credentials: true,
   })
 );
