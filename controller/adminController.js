@@ -31,45 +31,49 @@ exports.postFaculty = async (req, res) => {
     department,
     role: "faculty",
   });
+
   if (!validator.isEmail(email)) {
     return res.status(400).json({ error: "Invalid email address" });
   }
+
   const defPass = "defaultPassword";
 
   try {
-    const checkExistingFaculty = await Faculty.findOne({ email });
+    console.log("Checking existing faculty...");
+    const checkExistingFaculty = await Faculty.findOne({ username });
     if (checkExistingFaculty) {
       return res
-        .status(500)
-        .json({ message: "Faculty exixts with same email id" });
+        .status(409)
+        .json({ message: "Faculty exists with same email id" });
     }
+
+    console.log("Registering new faculty...");
     const result = await Faculty.register(newFaculty, defPass);
+
+    console.log("Faculty registered:", result);
+
+    // 🔹 Setup Nodemailer transport
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: "gmail", // or "hotmail", "yahoo", etc.
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.EMAIL_USER, // your email
+        pass: process.env.EMAIL_PASS, // app password (not raw Gmail password!)
       },
     });
 
-    await transporter.sendMail({
-      from: `"Academic Feedback" <${process.env.EMAIL_USER}>`,
+    // 🔹 Send email
+    const mailOptions = {
+      from: `"Feedback Guru" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Your Faculty Account Credentials",
-      html: `
-        <h3>Hello ${name},</h3>
-        <p>Your faculty account has been created. Use the following credentials to log in:</p>
-        <ul>
-          <li><b>Username:</b> ${newFaculty.username}</li>
-          <li><b>Temporary Password:</b> ${defPass}</li>
-        </ul>
-        <p>Please change your password after logging in.</p>
-        <a href="http://localhost:5173/login">Login Here</a>
-      `,
-    });
+      subject: "Your Faculty Account Has Been Created",
+      text: `Hello ${name},\n\nYour faculty account has been created successfully.\n\nUsername: ${username}\nPassword: ${defPass}\n\nPlease login and change your password.\n\nRegards,\nFeedback Guru`,
+    };
 
-    res.json({ message: "Faculty added successfully", result });
+    await transporter.sendMail(mailOptions);
+
+    res.json({ message: "Faculty added successfully & email sent", result });
   } catch (e) {
+    console.error("Error in postFaculty:", e);
     res.status(500).json({ error: e.message });
   }
 };

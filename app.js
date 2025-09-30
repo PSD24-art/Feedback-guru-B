@@ -6,6 +6,7 @@ const session = require("express-session");
 const passport = require("passport");
 require("dotenv").config();
 const LocalStrategy = require("passport-local");
+const MongoStore = require("connect-mongo");
 
 // Local Modules
 const studentRouter = require("./routes/studentRouter");
@@ -26,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["https://feedback-guru.onrender.com"], // frontend URLs
+    origin: ["http://localhost:5173", "https://feedback-guru.onrender.com"], // frontend URLs
     credentials: true,
   })
 );
@@ -36,11 +37,16 @@ const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: "sessions",
+    ttl: 7 * 24 * 60 * 60, // 7 days (in seconds)
+  }),
   cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (in ms)
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: true, // must be true for https
+    sameSite: "none", // required for cross-site cookies
   },
 };
 app.use(session(sessionOptions));
@@ -69,10 +75,10 @@ app.get("/me", isAuthenticated, (req, res) => {
   res.json({ user: req.user });
 });
 
-app.use(loginRouter);
-app.use(adminRouter);
-app.use(studentRouter);
-app.use(facultyRouter);
+app.use("/api", loginRouter);
+app.use("/api", adminRouter);
+app.use("/api", studentRouter);
+app.use("/api", facultyRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
