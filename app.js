@@ -33,6 +33,7 @@ app.use(
 );
 
 // Session
+const isProduction = process.env.NODE_ENV === "production";
 const sessionOptions = {
   secret: process.env.SECRET,
   resave: false,
@@ -45,8 +46,8 @@ const sessionOptions = {
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days (in ms)
     httpOnly: true,
-    secure: true, // must be true for https
-    sameSite: "none", // required for cross-site cookies
+    secure: isProduction, // HTTPS only in production
+    sameSite: isProduction ? "none" : "lax", // required for cross-site cookies
   },
 };
 app.use(session(sessionOptions));
@@ -62,7 +63,7 @@ passport.deserializeUser(Faculty.deserializeUser());
 const DB_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 mongoose
-  .connect(DB_URI, {})
+  .connect(DB_URI)
   .then(() => console.log("Database Connected"))
   .catch((err) => console.error("DB Connection Error:", err));
 
