@@ -72,7 +72,7 @@ app.get("/", (req, res) => {
   res.send("Root is working");
 });
 
-app.get("/me", isAuthenticated, (req, res) => {
+app.get("/api/me", isAuthenticated, (req, res) => {
   res.json({ user: req.user });
 });
 
